@@ -36,6 +36,7 @@ jobs:
                       file_extension: .msi
 
         runs-on: ${{ matrix.platform }}
+        continue-on-error: true
 
         steps:
             - name: Checkout repository

@@ -1,0 +1,37 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer components {
+    .bg-editor {
+        --bg-editor: rgba(0, 0, 0, 0.10);
+
+        @variant dark {
+            --bg-editor: rgba(255, 255, 255, 0.10);
+        }
+
+        @apply bg-slate-100 dark:bg-slate-950;
+
+        background-image: radial-gradient(circle at 1px 1px, var(--bg-editor) 1px, transparent 0);
+        background-size: 20px 20px;
+    }
+
+    .bg-body:not(.bgbody .bg-editor) {
+        --bg-line: rgba(75, 85, 99, 0.05);
+        --bg-dot: rgba(55, 65, 81, 0.06);
+
+        @variant dark {
+            --bg-line: rgba(255, 255, 255, 0.04);
+            --bg-dot: rgba(255, 255, 255, 0.06);
+        }
+
+        background-image: repeating-linear-gradient(0deg, transparent, transparent 19px, var(--bg-line) 19px, var(--bg-line) 20px, transparent 20px, transparent 39px, var(--bg-line) 39px, var(--bg-line) 40px),
+        repeating-linear-gradient(90deg, transparent, transparent 19px, var(--bg-line) 19px, var(--bg-line) 20px, transparent 20px, transparent 39px, var(--bg-line) 39px, var(--bg-line) 40px),
+        radial-gradient(circle at 20px 20px, var(--bg-dot) 2px, transparent 2px),
+        radial-gradient(circle at 40px 40px, var(--bg-dot) 2px, transparent 2px);
+        background-size: 40px 40px,
+        40px 40px,
+        40px 40px,
+        40px 40px;
+    }
+}

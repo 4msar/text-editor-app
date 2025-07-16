@@ -82,7 +82,8 @@ jobs:
               env:
                   TARGET: ${{ matrix.target }}
 
-            - name: List bundle contents
+            - name: List bundle contents (macOS/Linux)
+              if: matrix.platform != 'windows-latest'
               run: |
                   echo "Bundle directory contents:"
                   find src-tauri/target/release/bundle/ -type f -name "*.AppImage" -o -name "*.app" -o -name "*.dmg" -o -name "*.msi" -o -name "*.deb" | head -20
@@ -96,10 +97,29 @@ jobs:
                   elif [ "${{ matrix.platform }}" = "ubuntu-latest" ]; then
                       ls -la src-tauri/target/release/bundle/appimage/ || echo "No appimage directory"
                       ls -la src-tauri/target/release/bundle/deb/ || echo "No deb directory"
-                  elif [ "${{ matrix.platform }}" = "windows-latest" ]; then
-                      ls -la src-tauri/target/release/bundle/msi/ || echo "No msi directory"
-                      ls -la src-tauri/target/release/bundle/updater/ || echo "No updater directory"
                   fi
+
+            - name: List bundle contents (Windows)
+              if: matrix.platform == 'windows-latest'
+              shell: powershell
+              run: |
+                  Write-Host "Bundle directory contents:"
+                  Get-ChildItem -Path "src-tauri/target/release/bundle/" -Recurse -File | Where-Object { $_.Name -match "\.(AppImage|app|dmg|msi|deb)$" } | Select-Object -First 20 | ForEach-Object { Write-Host $_.FullName }
+                  Write-Host "Artifact name: ${{ matrix.artifact_name }}"
+                  Write-Host "Platform: ${{ matrix.platform }}"
+
+                  # Check for specific files we want to upload
+                  Write-Host "Checking for specific files:"
+                  if (Test-Path "src-tauri/target/release/bundle/msi/") {
+                      Get-ChildItem "src-tauri/target/release/bundle/msi/"
+                  } else {
+                      Write-Host "No msi directory"
+                  }
+                  if (Test-Path "src-tauri/target/release/bundle/updater/") {
+                      Get-ChildItem "src-tauri/target/release/bundle/updater/"
+                  } else {
+                      Write-Host "No updater directory"
+                  }
 
             - name: Upload artifacts (macOS)
               if: matrix.platform == 'macos-latest'
